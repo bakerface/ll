@@ -48,7 +48,7 @@ console.log(program);
 */
 ```
 
-## *ll.decompile**
+## *ll.decompile*
 Below is an example of how to use the decompiler.
 
 ``` javascript
