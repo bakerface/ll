@@ -34,96 +34,27 @@ function assert(evaluated, expected) {
     }
 }
 
-function compiler(schematic, expected) {
-    var evaluated = ll.compile(schematic.join("\n"));
-    return assert(evaluated, expected);
+function run(schematic) {
+    var program = ll.compile(schematic);
+    return assert(schematic, ll.decompile(program));
 }
 
-function visitor(program, machine, expected) {
-    program.visit(machine);
-    return assert(machine, expected);
-}
+run("||                                                 ||\n" +
+    "||--[/ESTOP]----[/STOP]----+--[START]--+----(RUN)--||\n" +
+    "||                         |           |           ||\n" +
+    "||                         +--[RUN]----+           ||\n" +
+    "||                                                 ||\n" +
+    "||--[RUN]----(MOTOR)-------------------------------||\n" +
+    "||                                                 ||");
 
-compiler([
-    "!! this is an example of calling a system function      !!",
-    "||--{socket tcp FD}--------------------------(CLIENT)---||" ], [
-
-    ["socket", "tcp", "FD"],
-    ["out", "CLIENT"]
-]);
-
-compiler([
-    "!! this is an example of a latch with an emergency stop !!",
-    "||--[/ESTOP]----[/STOP]----+--[START]--+------(RUN)-----||",
-    "||                         |           |                ||",
-    "||                         +---[RUN]---+                ||",
-    "||                                                      ||",
-    "||--[RUN]-------------------------------------(MOTOR)---||" ], [
-
-    ["in", "ESTOP"],
-    ["not"],
-    ["in", "STOP"],
-    ["not"],
-    ["and"],
-    ["in", "START"],
-    ["in", "RUN"],
-    ["or"],
-    ["and"],
-    ["out", "RUN"],
-    ["in", "RUN"],
-    ["out", "MOTOR"]
-]);
-
-function Inputs(estop, stop, start, run) {
-    return {
-        stack: [],
-        ESTOP: estop,
-        STOP:  stop,
-        START: start,
-        RUN:   run,
-        "visit": function(instruction) {
-            this[instruction[0]].apply(this, instruction.slice(1));
-        },
-        "in": function(name) {
-            this.stack.push(this[name])
-        },
-        "out": function(name) {
-            this[name] = this.stack.pop()
-        },
-        "not": function() {
-            this.stack.push(!this.stack.pop());
-        },
-        "or": function(name) {
-            this.stack.push(this.stack.pop() | this.stack.pop());
-        },
-        "and": function(name) {
-            this.stack.push(this.stack.pop() & this.stack.pop());
-        }
-    };
-}
-
-function Outputs(estop, stop, start, run, motor) {
-    return {
-        stack: [],
-        ESTOP: estop,
-        STOP:  stop,
-        START: start,
-        RUN:   run,
-        MOTOR: motor
-    };
-}
-
-var program = ll.compile([
-    "!! this is an example of a latch with an emergency stop !!",
-    "||--[/ESTOP]----[/STOP]----+--[START]--+------(RUN)-----||",
-    "||                         |           |                ||",
-    "||                         +---[RUN]---+                ||",
-    "||                                                      ||",
-    "||--[RUN]-------------------------------------(MOTOR)---||" ].join("\n"));
+run("||                                                 ||\n" +
+    "||--[/ESTOP]----[/STOP]----+--[START]--+----(RUN)--||\n" +
+    "||                         |           |           ||\n" +
+    "||                         +--[RUN]----+           ||\n" +
+    "||                         |           |           ||\n" +
+    "||                         +--[ALT]----+           ||\n" +
+    "||                                                 ||\n" +
+    "||--[RUN]----(MOTOR)-------------------------------||\n" +
+    "||                                                 ||");
 
 
-
-visitor(program, Inputs(0, 0, 0, 0), Outputs(0, 0, 0, 0, 0));
-visitor(program, Inputs(0, 0, 1, 0), Outputs(0, 0, 1, 1, 1));
-visitor(program, Inputs(1, 0, 0, 1), Outputs(1, 0, 0, 0, 0));
-visitor(program, Inputs(1, 0, 1, 1), Outputs(1, 0, 1, 0, 0));
