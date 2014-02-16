@@ -167,12 +167,6 @@
             scan(rungs[r], instructions, 0, 0, 0);
         }
 
-        instructions.visit = function(visitor) {
-            for (var i = 0; i < instructions.length; i++) {
-                visitor.visit(instructions[i]);
-            }
-        };
-
         return instructions;
     }
 
@@ -323,6 +317,9 @@
         };
 
         this.or = function(a, b) {
+            canvas.draw("--");
+            canvas.right();
+
             var topLeft = canvas.getMarker();
             canvas.draw("+");
             canvas.right();
@@ -345,7 +342,7 @@
             canvas.draw("| ");
             canvas.left();
             canvas.up();
-            canvas.draw("+");
+            canvas.draw("+--");
             canvas.right();
         };
 
@@ -379,6 +376,12 @@
     }
 
     function decompile(program) {
+        program.visit = function(visitor) {
+            for (var i = 0; i < program.length; i++) {
+                visitor.visit(program[i]);
+            }
+        };
+
         return new Schematic(program).toString();
     }
 
