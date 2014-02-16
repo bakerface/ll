@@ -154,6 +154,9 @@
         else if (rung[row][column] == "+") {
             scanOr(rung, instructions, row, column, count);
         }
+        else if (rung[row][column] == " ") {
+            /* an empty rung used as a separation */
+        }
         else {
             throw new Error(rung[row].substr(column));
         }
@@ -206,18 +209,18 @@
             this[instruction[0]].apply(this, instruction.slice(1));
         };
 
-        this.not = function(name) {
+        this.not = function() {
             stack.push([ "not", stack.pop() ]);
         };
 
-        this.or = function(name) {
+        this.or = function() {
             var a = stack.pop();
             var b = stack.pop();
 
             stack.push([ "or", b, a ]);
         };
 
-        this.and = function(name) {
+        this.and = function() {
             var a = stack.pop();
             var b = stack.pop();
 
@@ -291,6 +294,19 @@
             row = lines.length - 1;
         };
 
+        this.end = function() {
+            column = lines[row].length - 1;
+        };
+
+        this.replaceUp = function(marker, replacements) {
+            while (row > marker[0]) {
+                var start = this.getMarker();
+                this.draw(replacements[lines[row][column]]);
+                this.setMarker(start);
+                this.up();
+            }
+        };
+
         this.crlf = function() {
             column = 0;
             this.down();
@@ -310,38 +326,46 @@
     }
 
     function Schematic(program) {
+        var self = this;
         var canvas = new Canvas();
 
         this.visit = function(instruction) {
             this[instruction[0]].apply(this, instruction.slice(1));
         };
 
+        function orRecursive(a, b) {
+            if (a[0] == "or") {
+                orRecursive(a[1], a[2]);
+            }
+            else {
+                var topLeft = canvas.getMarker();
+                canvas.draw("+");
+                canvas.right();
+                self.visit(a);
+                canvas.setMarker(topLeft);
+            }
+
+            canvas.down();
+            canvas.draw("| ");
+            canvas.left();
+            canvas.down();
+
+            var bottomLeft = canvas.getMarker(); 
+            canvas.draw("+");
+            canvas.right();
+            self.visit(b);
+            canvas.fill("-");
+            canvas.setMarker(bottomLeft);
+        }
+
         this.or = function(a, b) {
             canvas.draw("--");
             canvas.right();
 
             var topLeft = canvas.getMarker();
-            canvas.draw("+");
-            canvas.right();
-            this.visit(a);
-            var topRight = canvas.getMarker();
-
-            canvas.setMarker(topLeft);
-            canvas.down();
-            canvas.draw("| ");
-            canvas.left();
-            canvas.down();
-            canvas.draw("+");
-            canvas.right();
-            this.visit(b);
-            canvas.fill("-");
-
-            canvas.draw("+ ");
-            canvas.up();
-            canvas.left();
-            canvas.draw("| ");
-            canvas.left();
-            canvas.up();
+            orRecursive(a, b);
+            canvas.end();
+            canvas.replaceUp(topLeft, { " ": "| ", "-": "+ " });
             canvas.draw("+--");
             canvas.right();
         };
