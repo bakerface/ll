@@ -21,7 +21,7 @@ Below is an example of how to use the compiler.
 ``` javascript
 var ll = require("ll");
 
-var program = ll.compile([
+var program = ll.compile(
     "!! this is an example of a latch with an emergency stop !!\n" +
     "||--[/ESTOP]----[/STOP]----+--[START]--+------(RUN)-----||\n" +
     "||                         |           |                ||\n" +
