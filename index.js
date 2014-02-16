@@ -175,4 +175,10 @@ function compile(schematic) {
     return instructions;
 }
 
-module.exports = compile;
+if (typeof exports === "undefined") {
+    this["ll"] = compile;
+}
+else {
+    module.exports = compile;
+}
+
