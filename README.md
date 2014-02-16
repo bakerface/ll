@@ -53,23 +53,30 @@ Below is an example of how to use the decompiler.
 ``` javascript
 var ll = require("ll");
 
-var program = ll.compile([
-    "!! this is an example of a latch with an emergency stop !!",
-    "||--[/ESTOP]----[/STOP]----+--[START]--+------(RUN)-----||",
-    "||                         |           |                ||",
-    "||                         +---[RUN]---+                ||",
-    "||                                                      ||",
-    "||--[RUN]-------------------------------------(MOTOR)---||" ].join("\n"));
+var program = [
+    [ 'in', 'ESTOP' ],
+    [ 'not' ],
+    [ 'in', 'STOP' ],
+    [ 'not' ],
+    [ 'and' ],
+    [ 'in', 'START' ],
+    [ 'in', 'RUN' ],
+    [ 'or' ],
+    [ 'and' ],
+    [ 'out', 'RUN' ],
+    [ 'in', 'RUN' ],
+    [ 'out', 'MOTOR' ]
+];
 
 console.log(ll.decompile(program));
 
 /*
-||                                             ||
-||--[/ESTOP]----[/STOP]--+--[START]--+--(RUN)--||
-||                       |           |         ||
-||                       +--[RUN]----+         ||
-||                                             ||
-||--[RUN]----(MOTOR)---------------------------||
-||                                             ||
+||                                                 ||
+||--[/ESTOP]----[/STOP]----+--[START]--+----(RUN)--||
+||                         |           |           ||
+||                         +--[RUN]----+           ||
+||                                                 ||
+||--[RUN]----(MOTOR)-------------------------------||
+||                                                 ||
 */
 ```
