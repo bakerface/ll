@@ -21,7 +21,7 @@
  *
  */
 
-var ll = require("./index.js");
+var ll = require("./");
 
 function assert(evaluated, expected) {
     expected = JSON.stringify(expected, null, " ");
@@ -35,7 +35,7 @@ function assert(evaluated, expected) {
 }
 
 function compiler(schematic, expected) {
-    var evaluated = ll(schematic.join("\n"));
+    var evaluated = ll.compile(schematic.join("\n"));
     return assert(evaluated, expected);
 }
 
@@ -113,7 +113,7 @@ function Outputs(estop, stop, start, run, motor) {
     };
 }
 
-var program = ll([
+var program = ll.compile([
     "!! this is an example of a latch with an emergency stop !!",
     "||--[/ESTOP]----[/STOP]----+--[START]--+------(RUN)-----||",
     "||                         |           |                ||",

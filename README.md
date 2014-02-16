@@ -19,9 +19,9 @@ npm install git+https://github.com/bakerface/ll.git
 Below is an example of how to use the compiler.
 
 ``` javascript
-var compile = require("ll");
+var ll = require("ll");
 
-var program = compile([
+var program = ll.compile([
     "!! this is an example of a latch with an emergency stop !!",
     "||--[/ESTOP]----[/STOP]----+--[START]--+------(RUN)-----||",
     "||                         |           |                ||",
@@ -52,7 +52,7 @@ console.log(program);
 Below is an example of how to use a visitor to execute the compiled program.
 
 ``` javascript
-var compile = require("ll");
+var ll = require("ll");
 
 function Visitor(relays) {
     var stack = [];
@@ -82,7 +82,7 @@ function Visitor(relays) {
     };
 }
 
-var program = compile([
+var program = ll.compile([
     "!! this is an example of a latch with an emergency stop !!",
     "||--[/ESTOP]----[/STOP]----+--[START]--+------(RUN)-----||",
     "||                         |           |                ||",

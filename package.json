@@ -2,6 +2,7 @@
     "name" : "ll",
     "description" : "Ladder Logic Compiler for node.js",
     "homepage" : "https://www.github.com/bakerface/ll",
+    "main": "ll.js",
     "keywords" : [
         "bakerface",
         "ll",
