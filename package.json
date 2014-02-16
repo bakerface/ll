@@ -1,0 +1,17 @@
+{
+    "name" : "ll",
+    "description" : "Ladder Logic Compiler for node.js",
+    "homepage" : "https://www.github.com/bakerface/ll",
+    "keywords" : [
+        "bakerface",
+        "ll",
+        "ladder",
+        "logic",
+        "compiler"
+    ],
+    "author" : "Christopher M. Baker <mail.chris.baker@gmail.com>",
+    "repository" : {
+        "type": "git", "url": "https://www.github.com/bakerface/ll.git"
+    },
+    "version" : "0.0.1"
+}
