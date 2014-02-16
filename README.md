@@ -5,8 +5,8 @@ This node.js package provides methods for compiling and executing ladder logic p
 ## Table of Contents
 
 - [Installation](#installation)
-- [Compiler](#compiler)
-- [Visitor](#visitor)
+- [ll.compile](#llcompile)
+- [ll.decompile](#lldecompile)
 
 ## Installation
 To install this application using the node.js package manager, issue the following commands:
@@ -15,7 +15,7 @@ To install this application using the node.js package manager, issue the followi
 npm install git+https://github.com/bakerface/ll.git
 ```
 
-## Compiler
+## *ll.compile*
 Below is an example of how to use the compiler.
 
 ``` javascript
@@ -48,39 +48,11 @@ console.log(program);
 */
 ```
 
-## Visitor
-Below is an example of how to use a visitor to execute the compiled program.
+## *ll.decompile**
+Below is an example of how to use the decompiler.
 
 ``` javascript
 var ll = require("ll");
-
-function Visitor(relays) {
-    var stack = [];
-
-    this["visit"] = function(instruction) {
-        this[instruction[0]].apply(this, instruction.slice(1));
-    };
-
-    this["in"] = function(name) {
-        stack.push(relays[name]);
-    };
-
-    this["out"] = function(name) {
-        relays[name] = stack.pop();
-    };
-
-    this["not"] = function() {
-        stack.push(!stack.pop());
-    };
-
-    this["or"] = function(name) {
-        stack.push(stack.pop() | stack.pop());
-    };
-
-    this["and"] = function(name) {
-        stack.push(stack.pop() & stack.pop());
-    };
-}
 
 var program = ll.compile([
     "!! this is an example of a latch with an emergency stop !!",
@@ -90,16 +62,15 @@ var program = ll.compile([
     "||                                                      ||",
     "||--[RUN]-------------------------------------(MOTOR)---||" ].join("\n"));
 
+console.log(ll.decompile(program));
 
-
-var relays = {
-    ESTOP: 0,
-    STOP:  0,
-    START: 1,
-    RUN:   0,
-    MOTOR: 0
-};
-
-program.visit(new Visitor(relays));
-console.log(relays); // { ESTOP: 0, STOP: 0, START: 1, RUN: 1, MOTOR: 1 }
+/*
+||                                             ||
+||--[/ESTOP]----[/STOP]--+--[START]--+--(RUN)--||
+||                       |           |         ||
+||                       +--[RUN]----+         ||
+||                                             ||
+||--[RUN]----(MOTOR)---------------------------||
+||                                             ||
+*/
 ```
