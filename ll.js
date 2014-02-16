@@ -176,6 +176,213 @@
         return instructions;
     }
 
+    function NotVisitor(parent) {
+        var pending;
+
+        this.visit = function(instruction) {
+            if (instruction[0] == "not" && pending[0] == "in") {
+                parent.visit([ "in", "/" + pending[1] ]);
+                pending = null;
+            }
+            else if (instruction[0] == "out" && pending) {
+                if (pending[0] == "not") {
+                    parent.visit([ "out", "/" + instruction[1] ]);
+                    pending = null;
+                }
+                else {
+                    parent.visit(pending);
+                    parent.visit(instruction);
+                    pending = null;
+                }
+            }
+            else {
+                if (pending) {
+                    parent.visit(pending);
+                }
+
+                pending = instruction;
+            }
+        };
+    }
+
+    function TreeVisitor(parent) {
+        var stack = [];
+
+        this.visit = function(instruction) {
+            this[instruction[0]].apply(this, instruction.slice(1));
+        };
+
+        this.not = function(name) {
+            stack.push([ "not", stack.pop() ]);
+        };
+
+        this.or = function(name) {
+            var a = stack.pop();
+            var b = stack.pop();
+
+            stack.push([ "or", b, a ]);
+        };
+
+        this.and = function(name) {
+            var a = stack.pop();
+            var b = stack.pop();
+
+            stack.push([ "and", b, a ]);
+        };
+
+        this.in = function(name) {
+            stack.push([ "in", name ]);
+        };
+
+        this.out = function(name) {
+            parent.visit([ "out", name, stack.pop() ]);
+        };
+    }
+
+    function Canvas() {
+        var row;
+        var column;
+        var lines;
+
+        this.left = function() {
+            if (column-- == 0) throw new Error();
+        }
+
+        this.right = function() {
+            if (++column == lines[0].length) {
+                for (var i = 0; i < lines.length; i++) {
+                    lines[i] += lines[i].substr(-1);
+                }
+            }
+        }
+
+        this.up = function() {
+            if (row-- == 0) throw new Error();
+        }
+
+        this.down = function() {
+            if (++row == lines.length) {
+                lines.push(new Array(lines[0].length + 1).join(" "));
+            }
+        }
+
+        this.draw = function(text) {
+            lines[row] = lines[row].substr(0, column) + text[0] +
+                lines[row].substr(column + 1);
+
+            for (var i = 1; i < text.length; i++) {
+                this.right();
+
+                lines[row] = lines[row].substr(0, column) + text[i] +
+                    lines[row].substr(column + 1);
+            }
+        }
+
+        this.getMarker = function() {
+            return [row, column];
+        };
+
+        this.setMarker = function(marker) {
+            row = marker[0];
+            column = marker[1];
+        };
+
+        this.fill = function(c) {
+            var text = new Array(lines[row].length - column + 1).join(c);
+            lines[row] = lines[row].substr(0, column) + text;
+            column = lines[row].length - 1;
+        };
+
+        this.bottom = function() {
+            row = lines.length - 1;
+        };
+
+        this.crlf = function() {
+            column = 0;
+            this.down();
+        };
+
+        this.clear = function() {
+            row = 0;
+            column = 0;
+            lines = [""];
+        };
+
+        this.getLines = function() {
+            return lines.slice(-1).concat(lines.slice(0, lines.length - 1));
+        };
+
+        this.clear();
+    }
+
+    function Schematic(program) {
+        var canvas = new Canvas();
+
+        this.visit = function(instruction) {
+            this[instruction[0]].apply(this, instruction.slice(1));
+        };
+
+        this.or = function(a, b) {
+            var topLeft = canvas.getMarker();
+            canvas.draw("+");
+            canvas.right();
+            this.visit(a);
+            var topRight = canvas.getMarker();
+
+            canvas.setMarker(topLeft);
+            canvas.down();
+            canvas.draw("| ");
+            canvas.left();
+            canvas.down();
+            canvas.draw("+");
+            canvas.right();
+            this.visit(b);
+            canvas.fill("-");
+
+            canvas.draw("+ ");
+            canvas.up();
+            canvas.left();
+            canvas.draw("| ");
+            canvas.left();
+            canvas.up();
+            canvas.draw("+");
+            canvas.right();
+        };
+
+        this.and = function(a, b) {
+            this.visit(a);
+            this.visit(b);
+        };
+
+        this.in = function(name) {
+            canvas.draw("--[" + name + "]--");
+            canvas.right();
+        };
+
+        this.out = function(name, value) {
+            var marker = canvas.getMarker();
+            canvas.fill("-");
+            canvas.setMarker(marker);
+
+            this.visit(value);
+            canvas.draw("--(" + name + ")--");
+            canvas.bottom();
+            canvas.down();
+            canvas.crlf();
+        };
+
+        this.toString = function() {
+            canvas.clear();
+            program.visit(new NotVisitor(new TreeVisitor(this)));
+            return "||" + canvas.getLines().join("||\n||") + "||";
+        };
+    }
+
+    function decompile(program) {
+        return new Schematic(program).toString();
+    }
+
     exports.compile = compile;
+    exports.decompile = decompile;
 })((typeof exports === "undefined") ? (this.ll = { }) : module.exports);
 
