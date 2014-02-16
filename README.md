@@ -22,12 +22,12 @@ Below is an example of how to use the compiler.
 var ll = require("ll");
 
 var program = ll.compile([
-    "!! this is an example of a latch with an emergency stop !!",
-    "||--[/ESTOP]----[/STOP]----+--[START]--+------(RUN)-----||",
-    "||                         |           |                ||",
-    "||                         +---[RUN]---+                ||",
-    "||                                                      ||",
-    "||--[RUN]-------------------------------------(MOTOR)---||" ].join("\n"));
+    "!! this is an example of a latch with an emergency stop !!\n" +
+    "||--[/ESTOP]----[/STOP]----+--[START]--+------(RUN)-----||\n" +
+    "||                         |           |                ||\n" +
+    "||                         +---[RUN]---+                ||\n" +
+    "||                                                      ||\n" +
+    "||--[RUN]-------------------------------------(MOTOR)---||");
 
 console.log(program);
 
@@ -43,8 +43,7 @@ console.log(program);
   [ 'and' ],
   [ 'out', 'RUN' ],
   [ 'in', 'RUN' ],
-  [ 'out', 'MOTOR' ],
-  visit: [Function] ]
+  [ 'out', 'MOTOR' ] ]
 */
 ```
 
