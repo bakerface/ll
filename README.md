@@ -1,6 +1,6 @@
 # Ladder Logic Compiler
 
-This node.js package provides methods for compiling and executing ladder logic programs.
+This node.js package provides methods for compiling and decompiling ladder logic programs.
 
 ## Table of Contents
 
