@@ -1,5 +1,5 @@
 {
-  "name": "ll",
+  "name": "ladder-logic",
   "description": "Ladder Logic Compiler for node.js and the web",
   "homepage": "https://www.github.com/bakerface/ll",
   "main": "ll.js",
