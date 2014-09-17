@@ -1,18 +1,23 @@
 {
-    "name" : "ll",
-    "description" : "Ladder Logic Compiler for node.js and the web",
-    "homepage" : "https://www.github.com/bakerface/ll",
-    "main": "ll.js",
-    "keywords" : [
-        "bakerface",
-        "ll",
-        "ladder",
-        "logic",
-        "compiler"
-    ],
-    "author" : "Christopher M. Baker <mail.chris.baker@gmail.com>",
-    "repository" : {
-        "type": "git", "url": "https://www.github.com/bakerface/ll.git"
-    },
-    "version" : "0.0.1"
+  "name": "ll",
+  "description": "Ladder Logic Compiler for node.js and the web",
+  "homepage": "https://www.github.com/bakerface/ll",
+  "main": "ll.js",
+  "keywords": [
+    "bakerface",
+    "ll",
+    "ladder",
+    "logic",
+    "compiler"
+  ],
+  "author": "Christopher M. Baker <mail.chris.baker@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/bakerface/ll.git"
+  },
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "test": "node test.js"
+  }
 }
