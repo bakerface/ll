@@ -12,7 +12,7 @@ This node.js package provides methods for compiling and decompiling ladder logic
 To install this application using the node.js package manager, issue the following commands:
 
 ```
-npm install git+https://github.com/bakerface/ll.git
+npm install ladder-logic
 ```
 
 ## *ll.compile*
