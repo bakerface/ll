@@ -19,7 +19,7 @@ npm install ladder-logic
 Below is an example of how to use the compiler.
 
 ``` javascript
-var ll = require("ll");
+var ll = require("ladder-logic");
 
 var program = ll.compile(
     "!! this is an example of a latch with an emergency stop !!\n" +
@@ -51,7 +51,7 @@ console.log(program);
 Below is an example of how to use the decompiler.
 
 ``` javascript
-var ll = require("ll");
+var ll = require("ladder-logic");
 
 var program = [
     [ 'in', 'ESTOP' ],
